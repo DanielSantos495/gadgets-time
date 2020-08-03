@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chronometer</title>
+</head>
+<body>
+
+  <div style="display: flex; justify-content: space-around;">
+    <p id="hour">0</p>
+    <p id="minute">0</p>
+    <p id="seconds">0</p>
+    <p id="miliseconds">0</p>
+    <div>
+
+      <button id="init">Init</button>
+      <button id="pause">Pause</button>
+      <button id="restart">Restart</button>
+    </div>
+  </div>
+
+
+  <!-- Timer---------------_Timer -->
+  <div style="display: list-item;">
+    <form action="" id="form">
+
+      <input id="hours" placeholder="Hours">
+      <input id="minutes" placeholder="Minutes" >
+      <input id="seconds" placeholder="Seconds" >
+      <input  id="miliseconds" placeholder="Milisegundos">
+
+      <button id="initTimer">Init</button>
+      <button id="pauseTimer">Pause</button>
+      <button id="restartTimer">Restart</button>
+
+    </form>
+
+    <p id="hourTimer">0</p>
+    <p id="minuteTimer">0</p>
+    <p id="secondsTimer">0</p>
+    <p id="milisecondsTimer">0</p>
+
+  </div>
+
+  <script>
+
+    const chronometerApp = () => {
+
+      const hour = document.getElementById('hour');
+      const minute = document.getElementById('minute');
+      const seconds = document.getElementById('seconds');
+      const miliseconds = document.getElementById('miliseconds');
+
+      const play = document.getElementById('init');
+      const pause = document.getElementById('pause');
+      const restart = document.getElementById('restart');
+
+      let milisecs = 0;
+      let secs = 0;
+      let min = 0;
+      let hou = 0;
+
+      let intervalId;
+
+      function playOn() {
+
+
+        intervalId = setInterval(() => {
+
+          //logica milisegundos
+          milisecs++;
+          miliseconds.textContent = milisecs === 100 ? 0 : milisecs;
+
+          //logica segundos
+          if (milisecs === 100) {
+
+            secs++;
+            seconds.textContent = secs === 60 ? 0 : secs;
+            milisecs = 0;
+          }
+
+          //logica minutos
+          if (secs === 60) {
+
+            min++;
+            console.log(min)
+            minute.textContent = min === 60 ? 0 : min;
+            secs = 0;
+          }
+          //logica horas
+          if (min === 60) {
+            hou++;
+            hour.textContent = hou;
+            min = 0;
+          }
+
+        }, 10);
+
+        console.log(intervalId);
+
+        play.removeEventListener('click', playOn)
+
+      };
+
+      function pauseOn() {
+
+        clearInterval(intervalId);
+        play.addEventListener('click', playOn);
+
+      }
+
+      function restartOn() {
+
+        milisecs = 0;
+        secs = 0;
+        min = 0;
+        hou = 0;
+
+        miliseconds.textContent = milisecs === 100 ? 0 : milisecs;
+        seconds.textContent = secs === 60 ? 0 : secs;
+        seconds.textContent = secs === 60 ? 0 : secs;
+        minute.textContent = min === 60 ? 0 : min;
+
+
+      }
+
+      play.addEventListener('click', playOn);
+      pause.addEventListener('click' , pauseOn);
+      restart.addEventListener('click', restartOn);
+
+    }
+
+    const timerApp = () => {
+
+      // timer variables
+      const hour = document.getElementById('hourTimer');
+      const minute = document.getElementById('minuteTimer');
+      const seconds = document.getElementById('secondsTimer');
+      const miliseconds = document.getElementById('milisecondsTimer');
+
+      const play = document.getElementById('initTimer');
+      const pause = document.getElementById('pauseTimer');
+      const restart = document.getElementById('restartTimer');
+
+      const form = document.getElementById('form');
+
+      let milisecs = 0;
+      let secs = 0;
+      let min = 0;
+      let hou = 0;
+
+      let intervalId;
+
+      function timer(e) {
+
+        e.preventDefault();
+
+        const hoursInput = parseInt(document.getElementById('hours').value);
+        const minutesInput = parseInt(document.getElementById('minutes').value);
+        const secsInput = parseInt(document.getElementById('seconds').value);
+        debugger
+        const milisecsInput = parseInt(document.getElementById('miliseconds').value);
+
+        if(typeof hoursInput === "number") {
+          console.log('function');
+          console.log(hoursInput);
+          console.log(minutesInput);
+        debugger
+
+          console.log(secsInput);
+          console.log(milisecsInput);
+        } else {
+          console.log('Ingresa un número');
+        }
+
+
+        form.reset();
+      }
+
+      form.addEventListener('submit', timer)
+
+      function playOn() {
+
+      }
+
+      play.addEventListener('click', playOn);
+
+    }
+
+    chronometerApp();
+    timerApp();
+
+
+
+  </script>
+</body>
+</html>
