@@ -8,10 +8,10 @@
 <body>
 
   <div style="display: flex; justify-content: space-around;">
-    <p id="hour">0</p>
-    <p id="minute">0</p>
-    <p id="seconds">0</p>
-    <p id="miliseconds">0</p>
+    <p id="hourChronometer">0</p>
+    <p id="minuteChronometer">0</p>
+    <p id="secondsChronometer">0</p>
+    <p id="milisecondsChronometer">0</p>
     <div>
 
       <button id="init">Init</button>
@@ -25,10 +25,9 @@
   <div style="display: list-item;">
     <form action="" id="form">
 
-      <input id="hours" placeholder="Hours">
-      <input id="minutes" placeholder="Minutes" >
-      <input id="seconds" placeholder="Seconds" >
-      <input  id="miliseconds" placeholder="Milisegundos">
+      <input id="hours" placeholder="Hours" maxlength="2">
+      <input id="minutes" placeholder="Minutes" maxlength="2">
+      <input id="seconds" placeholder="Seconds" maxlength="2">
 
       <button id="initTimer">Init</button>
       <button id="pauseTimer">Pause</button>
@@ -39,7 +38,6 @@
     <p id="hourTimer">0</p>
     <p id="minuteTimer">0</p>
     <p id="secondsTimer">0</p>
-    <p id="milisecondsTimer">0</p>
 
   </div>
 
@@ -47,10 +45,10 @@
 
     const chronometerApp = () => {
 
-      const hour = document.getElementById('hour');
-      const minute = document.getElementById('minute');
-      const seconds = document.getElementById('seconds');
-      const miliseconds = document.getElementById('miliseconds');
+      const hourChronometer = document.getElementById('hourChronometer');
+      const minuteChronometer = document.getElementById('minuteChronometer');
+      const secondsChronometer = document.getElementById('secondsChronometer');
+      const milisecondsChronometer = document.getElementById('milisecondsChronometer');
 
       const play = document.getElementById('init');
       const pause = document.getElementById('pause');
@@ -70,13 +68,13 @@
 
           //logica milisegundos
           milisecs++;
-          miliseconds.textContent = milisecs === 100 ? 0 : milisecs;
+          milisecondsChronometer.textContent = milisecs === 100 ? 0 : milisecs;
 
           //logica segundos
           if (milisecs === 100) {
 
             secs++;
-            seconds.textContent = secs === 60 ? 0 : secs;
+            secondsChronometer.textContent = secs === 60 ? 0 : secs;
             milisecs = 0;
           }
 
@@ -85,13 +83,13 @@
 
             min++;
             console.log(min)
-            minute.textContent = min === 60 ? 0 : min;
+            minuteChronometer.textContent = min === 60 ? 0 : min;
             secs = 0;
           }
           //logica horas
           if (min === 60) {
             hou++;
-            hour.textContent = hou;
+            hourChronometer.textContent = hou;
             min = 0;
           }
 
@@ -99,6 +97,7 @@
 
         console.log(intervalId);
 
+        //Quitamos el evento en play (después se vuelve agregar) para que activen el chrono varias veces ya activado
         play.removeEventListener('click', playOn)
 
       };
@@ -106,21 +105,23 @@
       function pauseOn() {
 
         clearInterval(intervalId);
+        //Agregamos evento en play
         play.addEventListener('click', playOn);
 
       }
 
       function restartOn() {
-
+        //Put in 0 Chronometer
         milisecs = 0;
         secs = 0;
         min = 0;
         hou = 0;
 
-        miliseconds.textContent = milisecs === 100 ? 0 : milisecs;
-        seconds.textContent = secs === 60 ? 0 : secs;
-        seconds.textContent = secs === 60 ? 0 : secs;
-        minute.textContent = min === 60 ? 0 : min;
+        //print 0 Chronometer
+        milisecondsChronometer.textContent = milisecs === 100 ? 0 : milisecs;
+        secondsChronometer.textContent = secs === 60 ? 0 : secs;
+        minuteChronometer.textContent = min === 60 ? 0 : min;
+        hourChronometer.textContent = secs === 60 ? 0 : secs;
 
 
       }
@@ -136,8 +137,7 @@
       // timer variables
       const hour = document.getElementById('hourTimer');
       const minute = document.getElementById('minuteTimer');
-      const seconds = document.getElementById('secondsTimer');
-      const miliseconds = document.getElementById('milisecondsTimer');
+      const second = document.getElementById('secondsTimer');
 
       const play = document.getElementById('initTimer');
       const pause = document.getElementById('pauseTimer');
@@ -145,10 +145,10 @@
 
       const form = document.getElementById('form');
 
-      let milisecs = 0;
-      let secs = 0;
-      let min = 0;
-      let hou = 0;
+      // let milisecs = 0;
+      // let secs = 0;
+      // let min = 0;
+      // let hou = 0;
 
       let intervalId;
 
@@ -159,17 +159,74 @@
         const hoursInput = parseInt(document.getElementById('hours').value);
         const minutesInput = parseInt(document.getElementById('minutes').value);
         const secsInput = parseInt(document.getElementById('seconds').value);
-        debugger
-        const milisecsInput = parseInt(document.getElementById('miliseconds').value);
 
-        if(typeof hoursInput === "number") {
-          console.log('function');
-          console.log(hoursInput);
-          console.log(minutesInput);
-        debugger
+        //Validamos que las entradas sean números validos
+        if (typeof hoursInput === "number" && hoursInput !== NaN
+          && typeof minutesInput === "number" && minutesInput !== NaN
+          && typeof secsInput === "number" && secsInput !== NaN
+          ) {
 
-          console.log(secsInput);
-          console.log(milisecsInput);
+            let h = hoursInput;
+            let m = minutesInput;
+            let s = secsInput;
+
+            /*Logica para: si el segundero es mayor a 60 segundos pasamos el minuto al minutero y dejamos
+            el restante en el segundero */
+            if (s >= 60) {
+
+              const moduloSeconds = s % 60
+              //Sumamos un minuto al minutero y dejamos el restante en el segundero
+              s = moduloSeconds;
+              m = m + 1;
+            }
+
+            /*Logica para: si el minutero es mayor a 60 minutos pasamos la hora al horario y dejamos
+            el restante en el minutero */
+            if (m >= 60) {
+
+              const moduloMinutes = m % 60
+              //Sumamos la hora al horario y dejamos el restante en el minutero
+              m = moduloMinutes;
+              h = h + 1;
+            }
+
+          console.log('Hours:' + h);
+          console.log('Minutes:' + m);
+          console.log('secs:' + s);
+
+          hour.textContent = h;
+          minute.textContent = m;
+          second.textContent = s;
+
+          setInterval(() => {
+
+            s--
+            second.textContent = s;
+            console.log('segundos:'  + s)
+
+
+            if (s === 0) {
+
+              m--
+              minute.textContent = m;
+              s = 60;
+              console.log('minutos:'  + m)
+
+
+            }
+            console.log(m  + 'Y' + s)
+            // necesitamos que segundos den una vuelta más antes de que se le reste a hour y quede en 0
+            if (m === 0) {
+              h--
+              hour.textContent = h === 0  ? 1 : h ;
+              m = 60;
+
+              console.log('horas:'  + h)
+            }
+
+          }, 1000)
+
+
         } else {
           console.log('Ingresa un número');
         }
