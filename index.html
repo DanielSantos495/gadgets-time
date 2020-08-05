@@ -8,13 +8,14 @@
 <body>
 
   <div style="display: flex; justify-content: space-around;">
+    <h2>Chronometer</h2>
     <p id="hourChronometer">0</p>
     <p id="minuteChronometer">0</p>
     <p id="secondsChronometer">0</p>
     <p id="milisecondsChronometer">0</p>
     <div>
 
-      <button id="init">Init</button>
+      <button id="init">Play</button>
       <button id="pause">Pause</button>
       <button id="restart">Restart</button>
     </div>
@@ -23,18 +24,19 @@
 
   <!-- Timer---------------_Timer -->
   <div style="display: list-item;">
-    <form action="" id="form">
+    <h2>Timer</h2>
+    <div action="" id="form">
 
       <input id="hours" placeholder="Hours" maxlength="2">
       <input id="minutes" placeholder="Minutes" maxlength="2">
       <input id="seconds" placeholder="Seconds" maxlength="2">
 
-      <button id="initTimer">Init</button>
-      <button id="pauseTimer">Pause</button>
-      <button id="restartTimer">Restart</button>
 
-    </form>
-
+    </div>
+    <button id="initTimer">Play</button>
+    <button id="pauseTimer">Pause</button>
+    <button id="restartTimer">Restart</button>
+    <p id="message"></p>
     <p id="hourTimer">0</p>
     <p id="minuteTimer">0</p>
     <p id="secondsTimer">0</p>
@@ -45,15 +47,18 @@
 
     const chronometerApp = () => {
 
+      //Elementos donde se va a pintar el counter
       const hourChronometer = document.getElementById('hourChronometer');
       const minuteChronometer = document.getElementById('minuteChronometer');
       const secondsChronometer = document.getElementById('secondsChronometer');
       const milisecondsChronometer = document.getElementById('milisecondsChronometer');
 
+      // Control variables
       const play = document.getElementById('init');
       const pause = document.getElementById('pause');
       const restart = document.getElementById('restart');
 
+      //Counter variables
       let milisecs = 0;
       let secs = 0;
       let min = 0;
@@ -134,41 +139,126 @@
 
     const timerApp = () => {
 
-      // timer variables
-      const hour = document.getElementById('hourTimer');
-      const minute = document.getElementById('minuteTimer');
-      const second = document.getElementById('secondsTimer');
+      //Timer variables
+      const hourTimer= document.getElementById('hourTimer');
+      const minuteTimer = document.getElementById('minuteTimer');
+      const secondTimer = document.getElementById('secondsTimer');
 
+      //Control variables
       const play = document.getElementById('initTimer');
       const pause = document.getElementById('pauseTimer');
       const restart = document.getElementById('restartTimer');
 
-      const form = document.getElementById('form');
+      //Datos entrada variables
+      const hoursInput = document.getElementById('hours');
+      const minutesInput = document.getElementById('minutes');
+      const secsInput = document.getElementById('seconds');
 
-      // let milisecs = 0;
-      // let secs = 0;
-      // let min = 0;
-      // let hou = 0;
+      //Mensaje cuando si pasa algún dato que no es un número
+      const message = document.getElementById('message');
+
+      //Empezamos los input con 0
+      hoursInput.value = 0;
+      minutesInput.value = 0;
+      secsInput.value = 0;
+
+      //Counter variables
+      let h = 0;
+      let m = 0;
+      let s = 0;
 
       let intervalId;
 
+      function focusInEmpty(e) {
+        if(e.target.id === 'hours') {
+
+          hoursInput.value = '';
+
+        } else if(e.target.id === 'minutes') {
+
+          minutesInput.value = '';
+
+        } else if(e.target.id === 'seconds') {
+
+          secsInput.value = '';
+
+        }
+      }
+
+      function focusOutKeepZero(e) {
+        if(e.target.id === 'hours') {
+
+          hoursInput.value = 0;
+
+        } else if(e.target.id === 'minutes') {
+
+          minutesInput.value = 0;
+
+        } else if(e.target.id === 'seconds') {
+
+          secsInput.value = 0;
+
+        }
+      }
+
+      function removeZeroWhenFocus(e) {
+
+        if(e.target.id === 'hours') {
+
+          hoursInput.removeEventListener('focusout', focusOutKeepZero);
+
+        } else if(e.target.id === 'minutes') {
+
+          minutesInput.removeEventListener('focusout', focusOutKeepZero);
+
+        } else if(e.target.id === 'seconds') {
+
+          secsInput.removeEventListener('focusout', focusOutKeepZero);
+
+        }
+      }
+
+      //Eventos/Funciones para poner cero cuando se le quite el focus al input
+      hoursInput.addEventListener('focusout', focusOutKeepZero);
+      minutesInput.addEventListener('focusout', focusOutKeepZero);
+      secsInput.addEventListener('focusout', focusOutKeepZero);
+
+      //Eventos/Funciones para cuando se haga focus se limpie el input automaticamente
+      hoursInput.addEventListener('focusin', focusInEmpty);
+      minutesInput.addEventListener('focusin', focusInEmpty);
+      secsInput.addEventListener('focusin', focusInEmpty);
+
+      //Eventos/funciones para remover el focusout cuando el usuario el input
+      hoursInput.addEventListener('change', removeZeroWhenFocus);
+      minutesInput.addEventListener('change', removeZeroWhenFocus);
+      secsInput.addEventListener('change', removeZeroWhenFocus);
+
       function timer(e) {
 
-        e.preventDefault();
-
-        const hoursInput = parseInt(document.getElementById('hours').value);
-        const minutesInput = parseInt(document.getElementById('minutes').value);
-        const secsInput = parseInt(document.getElementById('seconds').value);
+        //Convertir inputs a números enteros
+        const hoursInputValue = parseInt(hoursInput.value);
+        const minutesInputValue = parseInt(minutesInput.value);
+        const secsInputValue = parseInt(secsInput.value);
 
         //Validamos que las entradas sean números validos
-        if (typeof hoursInput === "number" && hoursInput !== NaN
-          && typeof minutesInput === "number" && minutesInput !== NaN
-          && typeof secsInput === "number" && secsInput !== NaN
-          ) {
+        if (typeof hoursInputValue === "number" && !isNaN(hoursInputValue)
+          && typeof minutesInputValue === "number" && !isNaN(minutesInputValue)
+          && typeof secsInputValue === "number" && !isNaN(secsInputValue)) {
 
-            let h = hoursInput;
-            let m = minutesInput;
-            let s = secsInput;
+            //Después de hacer play volvemos agregar Eventos/Funciones para poner cero cuando se le quite el focus al input
+            hoursInput.addEventListener('focusout', focusOutKeepZero);
+            minutesInput.addEventListener('focusout', focusOutKeepZero);
+            secsInput.addEventListener('focusout', focusOutKeepZero);
+
+            //Cuando se inicia el timer los casillas inputs vuelven a 0
+            hoursInput.value = 0;
+            minutesInput.value = 0;
+            secsInput.value = 0;
+
+            //Asignamos el valor del input para empezar a tratar los datos con las siguientes variables:
+            h = hoursInputValue;
+            m = minutesInputValue;
+            s = secsInputValue;
 
             /*Logica para: si el segundero es mayor a 60 segundos pasamos el minuto al minutero y dejamos
             el restante en el segundero */
@@ -190,62 +280,93 @@
               h = h + 1;
             }
 
-          console.log('Hours:' + h);
-          console.log('Minutes:' + m);
-          console.log('secs:' + s);
+            //Pones en el navegador la cantidad de horas, minutos y segundos dados por el usuario
+            hourTimer.textContent = h;
+            minuteTimer.textContent = m;
+            secondTimer.textContent = s;
+            //Lógica del timer
+            intervalId = setInterval(() => {
 
-          hour.textContent = h;
-          minute.textContent = m;
-          second.textContent = s;
+              if (s > 0 && s <= 60) {
+                s--;
+                // console.log('Segundos:'  + s);
+              } else if (m > 0 && m <= 60) {
+                m--;
+                // console.log('Minutos:'  + m);
 
-          setInterval(() => {
+                s = 59;
+              } else if (h > 0) {
+                h--;
+                // console.log('Horas:'  + h);
 
-            s--
-            second.textContent = s;
-            console.log('segundos:'  + s)
+                m = 59;
+                s = 59;
+              }
+
+              hourTimer.textContent = h;
+              minuteTimer.textContent = m;
+              secondTimer.textContent = s;
+
+              play.removeEventListener('click', timer);
 
 
-            if (s === 0) {
-
-              m--
-              minute.textContent = m;
-              s = 60;
-              console.log('minutos:'  + m)
-
-
-            }
-            console.log(m  + 'Y' + s)
-            // necesitamos que segundos den una vuelta más antes de que se le reste a hour y quede en 0
-            if (m === 0) {
-              h--
-              hour.textContent = h === 0  ? 1 : h ;
-              m = 60;
-
-              console.log('horas:'  + h)
-            }
-
-          }, 1000)
+            }, 1000);
 
 
         } else {
           console.log('Ingresa un número');
+          message.textContent = 'Ingresa un número por favor'
         }
 
 
-        form.reset();
       }
 
-      form.addEventListener('submit', timer)
 
-      function playOn() {
+      function pauseOn() {
+        //pausa el timer
+        clearInterval(intervalId);
+        //agregar para iniciar nuevamente
+        play.addEventListener('click', timer);
+
+        // Deja los valores como quedaron pausados para volver a iniciar
+        hoursInput.value = h;
+        minutesInput.value = m;
+        secsInput.value = s;
+
+      }
+      function restartOn() {
+        //pausa el timer
+        clearInterval(intervalId);
+        //agregar para iniciar nuevamente
+        play.addEventListener('click', timer);
+
+        //Vuelve a 0 los tiempos
+        h = 0;
+        m = 0;
+        s = 0;
+
+        // Deja los valores como quedaron pausados para volver a iniciar
+        hoursInput.value = h;
+        minutesInput.value = m;
+        secsInput.value = s;
+
+        //muestra en el navegador que vuelven a 0
+        hourTimer.textContent = h;
+        minuteTimer.textContent = m;
+        secondTimer.textContent = s;
+
 
       }
 
-      play.addEventListener('click', playOn);
+      //Funciones que control
+      play.addEventListener('click', timer);
+      pause.addEventListener('click', pauseOn);
+      restart.addEventListener('click', restartOn);
 
     }
 
     chronometerApp();
+    // En el timerApp falta validar que cuando se da play con el timer vacio
     timerApp();
 
 
