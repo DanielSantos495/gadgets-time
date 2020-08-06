@@ -27,7 +27,7 @@
     <h2>Timer</h2>
     <div action="" id="form">
 
-      <input id="hours" placeholder="Hours" maxlength="2">
+      <input id="hours" placeholder="Hours" maxlength="2" >
       <input id="minutes" placeholder="Minutes" maxlength="2">
       <input id="seconds" placeholder="Seconds" maxlength="2">
 
@@ -37,9 +37,9 @@
     <button id="pauseTimer">Pause</button>
     <button id="restartTimer">Restart</button>
     <p id="message"></p>
-    <p id="hourTimer">0</p>
-    <p id="minuteTimer">0</p>
-    <p id="secondsTimer">0</p>
+    <p id="hourTimer">00</p>
+    <p id="minuteTimer">00</p>
+    <p id="secondsTimer">00</p>
 
   </div>
 
@@ -158,9 +158,9 @@
       const message = document.getElementById('message');
 
       //Empezamos los input con 0
-      hoursInput.value = 0;
-      minutesInput.value = 0;
-      secsInput.value = 0;
+      hoursInput.value = `${0}${0}`;
+      minutesInput.value = `${0}${0}`;
+      secsInput.value = `${0}${0}`;
 
       //Counter variables
       let h = 0;
@@ -188,15 +188,15 @@
       function focusOutKeepZero(e) {
         if(e.target.id === 'hours') {
 
-          hoursInput.value = 0;
+          hoursInput.value = `${0}${0}`;
 
         } else if(e.target.id === 'minutes') {
 
-          minutesInput.value = 0;
+          minutesInput.value = `${0}${0}`;
 
         } else if(e.target.id === 'seconds') {
 
-          secsInput.value = 0;
+          secsInput.value = `${0}${0}`;
 
         }
       }
@@ -216,6 +216,9 @@
           secsInput.removeEventListener('focusout', focusOutKeepZero);
 
         }
+
+        console.log(e.target.value);
+        console.log(e.target.valueAsNumber);
       }
 
       //Eventos/Funciones para poner cero cuando se le quite el focus al input
@@ -235,15 +238,24 @@
 
       function timer(e) {
 
+        // Deshabilitamos el click mientras el timer esta activo
+        play.removeEventListener('click', timer);
+
         //Convertir inputs a números enteros
         const hoursInputValue = parseInt(hoursInput.value);
         const minutesInputValue = parseInt(minutesInput.value);
         const secsInputValue = parseInt(secsInput.value);
 
-        //Validamos que las entradas sean números validos
-        if (typeof hoursInputValue === "number" && !isNaN(hoursInputValue)
-          && typeof minutesInputValue === "number" && !isNaN(minutesInputValue)
-          && typeof secsInputValue === "number" && !isNaN(secsInputValue)) {
+        // Validamos si hubo los inputs son 0
+        // sino validamos que las entradas sean números validos
+        if (hoursInputValue === 0 && minutesInputValue === 0 && secsInputValue === 0) {
+          console.log('Ingresa algún número, todos estan en 0');
+          //Si los inputs son 0 aquí termina el programa entonces activamos el play
+          play.addEventListener('click', timer);
+
+        } else if (typeof hoursInputValue === "number" && !Number.isNaN(hoursInputValue)
+          && typeof minutesInputValue === "number" && !Number.isNaN(minutesInputValue)
+          && typeof secsInputValue === "number" && !Number.isNaN(secsInputValue)) {
 
             //Después de hacer play volvemos agregar Eventos/Funciones para poner cero cuando se le quite el focus al input
             hoursInput.addEventListener('focusout', focusOutKeepZero);
@@ -251,9 +263,9 @@
             secsInput.addEventListener('focusout', focusOutKeepZero);
 
             //Cuando se inicia el timer los casillas inputs vuelven a 0
-            hoursInput.value = 0;
-            minutesInput.value = 0;
-            secsInput.value = 0;
+            hoursInput.value = `${0}${0}`;
+            minutesInput.value = `${0}${0}`;
+            secsInput.value = `${0}${0}`;
 
             //Asignamos el valor del input para empezar a tratar los datos con las siguientes variables:
             h = hoursInputValue;
@@ -280,10 +292,10 @@
               h = h + 1;
             }
 
-            //Pones en el navegador la cantidad de horas, minutos y segundos dados por el usuario
-            hourTimer.textContent = h;
-            minuteTimer.textContent = m;
-            secondTimer.textContent = s;
+            //Pone en el navegador la cantidad de horas, minutos y segundos dados por el usuario
+            hourTimer.textContent = h < 10 ? `0${h}` :h;
+            minuteTimer.textContent = m < 10 ? `0${m}` :m;
+            secondTimer.textContent = s < 10 ? `0${s}` :s;
             //Lógica del timer
             intervalId = setInterval(() => {
 
@@ -303,14 +315,37 @@
                 s = 59;
               }
 
-              hourTimer.textContent = h;
-              minuteTimer.textContent = m;
-              secondTimer.textContent = s;
+              hourTimer.textContent = h < 10 ? `0${h}` :h;
+              minuteTimer.textContent = m < 10 ? `0${m}` :m;
+              secondTimer.textContent = s < 10 ? `0${s}` :s;
 
-              play.removeEventListener('click', timer);
+              // Validamos el fin del timer
+              if (h === 0 && m === 0 && s === 0) {
+
+                // limpiamos el interval
+                clearInterval(intervalId);
+
+                //Ponemos los contadores a 0 para segurarnos
+                h = 0;
+                m = 0;
+                s = 0;
+
+                // Habilitamos el play para poder comenzar otro timer sin recargar
+                play.addEventListener('click', timer);
+
+                // Hacemos sonar una alarma o aviso
+                console.log('Acaba el temporizador SUENA ALARMA');
+
+              }
+
+
 
 
             }, 1000);
+
+            if (h === 0 && m === 0 && s === 0) {
+              console.log('Alarma');
+            }
 
 
         } else {
@@ -345,15 +380,10 @@
         m = 0;
         s = 0;
 
-        // Deja los valores como quedaron pausados para volver a iniciar
-        hoursInput.value = h;
-        minutesInput.value = m;
-        secsInput.value = s;
-
         //muestra en el navegador que vuelven a 0
-        hourTimer.textContent = h;
-        minuteTimer.textContent = m;
-        secondTimer.textContent = s;
+        hourTimer.textContent = h < 10 ? `0${h}` :h;
+        minuteTimer.textContent = m < 10 ? `0${m}` :m;
+        secondTimer.textContent = s < 10 ? `0${s}` :s;
 
 
       }
@@ -366,7 +396,8 @@
     }
 
     chronometerApp();
-    // En el timerApp falta validar que cuando se da play con el timer vacio
+    /* Falta validar despues de hacer focus se vuelve a hacer focus a un input se le borra
+    el contenido del input así ya no sea 0*/
     timerApp();
 
 
